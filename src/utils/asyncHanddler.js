@@ -1,0 +1,33 @@
+// const asyncHandler = () =>{}
+
+
+         // promises wala ->
+const asyncHandler = (requestHandler) =>{
+    (req,res,next) =>{
+        Promise.resolve(requestHandler(req,res,next)).catch((err) => next(err))
+    }
+}         
+export {asyncHandler}
+
+// higher order function 
+// const asyncHandler =() =>{}
+// const asyncHandler = (func) => () =>{}
+// const asyncHandler = (func) => async  () =>{}
+
+    
+                // try catch wala use kiya ->
+// const asyncHandler = (fn) => (req,res,next)=> {
+//     try{
+//         await(req,res,next)
+               
+//     } catch(error){
+//         res.status(error.code || 500).json({
+//             success : false,
+//             message : err.message
+//         })
+//     }
+// } 
+
+
+
+     

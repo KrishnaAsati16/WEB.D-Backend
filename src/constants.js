@@ -1,0 +1,1 @@
+export const DB_NAME = "FAHHHH"    // APPLICATION KE DB KA NAME HAIN
