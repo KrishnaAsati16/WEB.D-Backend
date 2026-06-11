@@ -1,3 +1,5 @@
 #  🛩️ BACKEND LEARNING
 
- ## [ModelLink]https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj
+## 🏗️ Architecture Diagram
+
+[View Diagram on Eraser.io](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj)
