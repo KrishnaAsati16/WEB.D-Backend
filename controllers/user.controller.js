@@ -5,6 +5,7 @@ import { User } from "../models/user.models.js"         // db se direct contact 
 import {uploadOnClodinary, UploadOnCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
+import moongoose from "moongoose"
 
 const generateAccesAndRefreshTokens = async(userId) =>{
     try{
@@ -173,7 +174,11 @@ const logoutUser = asyncHandler(async(req,res) =>{
         .json(new ApiResponse(200,{},"User logged Out"))
 })
 
-    // ACCESS TOKEN AND REFRESH TOKEN IN BACKEND ------>
+     
+
+
+
+           // ACCESS TOKEN AND REFRESH TOKEN IN BACKEND ------>
 
 const refreshAccessToken = asyncHandler(async(req,res)=>{
      const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
@@ -223,6 +228,9 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
 
 })
                           
+          
+
+
             // Writing update controllers for user ------->
 
      const changeCurrentPassword = asyncHandler(async(req,res)=>{
@@ -325,6 +333,9 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
     })
                 
 
+
+
+    
                 // Learn mongo aggregation pipelines------>
 
     const getUserChannelProfile = asyncHandler(async(req,res)=>{
@@ -392,9 +403,63 @@ const refreshAccessToken = asyncHandler(async(req,res)=>{
               throw new ApiError(404,"channel does not exists")
          }
 
-         return res.status(200).json(new ApiResponse(200,channel[0],"user channel fetched successfully"))
-         
+         return res.status(200).json(new ApiResponse(200,channel[0],"user channel fetched successfully"))   
     })
+
+
+
+
+    // how to write subpipelines and routes
+
+    const getWatchHistory = asyncHandler(async(req,res)=>{
+        //  req.user._id se kya milta h imp -> String milte 
+        const user = await User.aggregate([
+            {
+                $match:{
+                    _id:new moongoose.Types.ObjectId(req.user._id)
+                }
+            },
+            {
+                $lookup:{
+                    from: "videos",
+                    localField:"watchHistory",
+                    foreignField:"_id",
+                    as:"watchHistory",
+                    pipeline :[
+                        {
+                            $lookup:{
+                                from:"users",
+                                localField:"owner",
+                                foreignField:"_id",
+                                as:"owner",
+                                pipeline:[
+                                    {
+                                        $project:{
+                                            fullName:1,
+                                            username:1,
+                                            avatar:1
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            $addFields:{
+                                owner:{
+                                    $first:"$owner"
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        ])
+
+        return res.status(200).json(new ApiResponse(200,user[0].watchHistory,"Watched History fetched successfully"))
+    })
+
+
+     
 
 export {registerUser,
     loginUser,
@@ -404,6 +469,8 @@ export {registerUser,
     getCurrentUser,
     updateAccountDetails,
     updateUserAvatar,
-    updateUserCoverImage
+    updateUserCoverImage,
+    getUserChannelProfile,
+    getWatchHistory
 
 }
